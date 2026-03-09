@@ -1,0 +1,48 @@
+apiVersion: app.helios.io/v1alpha1
+kind: HeliosApp
+metadata:
+  name: test-db-app-v6
+  namespace: default
+spec:
+
+  description: "Managed by Helios Operator"
+  owner: 
+  
+  # Required Git/Docker Info
+  imageRepo: hoangphuc842/test-db-app-v6
+  gitRepo: "https://github.com/hoangphuc841/test-db-app-v6.git"
+  gitopsRepo: https://github.com/hoangphuc841/test-db-app-v6-gitops
+  gitopsPath: "apps/test-db-app-v6" # Assumed path
+  port: 8080
+  replicas: 1
+  testCommand: npm install && npm test
+  
+  # Webhook Config
+  webhookDomain: smee.io/k0EOzQF3bQIcJ1HL
+  webhookSecret: "github-credentials-test-db-app-v6"
+  gitopsSecretRef: "github-credentials-test-db-app-v6"
+
+  components:
+    - name: test-db-app-v6-backend
+      type: web-service
+      properties:
+        image: hoangphuc842/test-db-app-v6:latest
+        port: 8080
+        replicas: 1
+        env:
+          - name: NODE_ENV
+            value: "production"
+      traits:
+        - type: service
+          properties:
+            port: 8080
+            targetPort: 8080
+        
+        - type: database
+          properties:
+            dbType: "postgres"
+            
+            dbName: "test-db-app-v6-db"
+            
+            version: "16"
+        
